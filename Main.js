@@ -11,6 +11,7 @@ rl.close();
 
 
 const nn = new Classes.NeuralNetwork(2, 5, 1);
+console.log(nn.calcValues(2));
 console.log(13423423);
 
 const data = [];

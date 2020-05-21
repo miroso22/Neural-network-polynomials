@@ -1,50 +1,52 @@
 'use strict';
 
 class Neuron {
-  constructor(prevLayer) {
-    this.value = 0;
+  constructor(nOfWeights) {
     this.weights = [];
-    this.prevLayer = prevLayer;
-    for (let i = 0; i < prevLayer.neurons.length; i++) {
-      weights[i] = Math.random() - 0.5;
+    for (let i = 0; i < nOfWeights; i++) {
+      this.weights[i] = Math.random() - 0.5;
     }
   }
 
   actFunc(x) {
     return 1 / (1 + Math.exp(-x));
   }
-
   derivActFunc(x) {
     return Math.exp(-x) / Math.pow(Math.exp(-x) + 1, 2);
   }
 
   calcValue(inputs) {
-    inputs = inputs | prevLayer.neurons;
-    for (let i = 0; i < weights.length; i++) {
-      this.value += weights[i] * inputs[i].value;
+    let result = 0;
+    for (let i = 0; i < this.weights.length; i++) {
+      result += this.weights[i] * inputs[i];
     }
-    this.value = actFunc(this.value);
+    return this.actFunc(result);
   }
 }
+
+//------------------------------------------------------------------------------
 
 class NeuronLayer {
   constructor(numberOfNeurons, prevLayer) {
     this.neurons = [];
     this.values = [];
     for (let i = 0; i < numberOfNeurons; i++) {
-      this.neurons.push(new Neuron(prevLayer));
+      const nOfWeights = prevLayer ? prevLayer.neurons.length : 0;
+      this.neurons.push(new Neuron(nOfWeights));
     }
     this.prevLayer = prevLayer;
     this.bias = Math.random() - 0.5;
   }
 
-  calcValue(inputs) {
-    inputs = inputs | prevLayer.values;
-    for (let i = 0; i < neurons.length; i++) {
-      values[i] = neurons[i].calcValue(inputs);
+  calcValues(inputs) {
+    if (!inputs) inputs = this.prevLayer.values;
+    for (let i = 0; i < this.neurons.length; i++) {
+      this.values[i] = this.neurons[i].calcValue(inputs);
     }
   }
 }
+
+//------------------------------------------------------------------------------
 
 class NeuralNetwork {
   constructor(numberOfLayers, ...neuronsInLayer) {
@@ -54,11 +56,18 @@ class NeuralNetwork {
     }
   }
 
-  calcValue(x) {
+  calcValues(x) {
+    const inputs = this.getInput(x);
+    const layers = this.layers;
 
+    layers[0].calcValues(inputs);
+    for (let i = 1; i < layers.length; i++) {
+      layers[i].calcValues();
+    }
+    return layers[layers.length - 1].values;
   }
 
-  static getInput(x) {
+  getInput(x) {
     let res = [x];
     for (let i = 2; i < 6; i++) {
       res.push(Math.pow(x, i));
@@ -66,6 +75,8 @@ class NeuralNetwork {
     return res;
   }
 }
+
+//------------------------------------------------------------------------------
 
 module.exports = {
   NeuralNetwork
