@@ -39,10 +39,12 @@ class NeuronLayer {
   }
 
   calcValues(inputs) {
+    const neurons = this.neurons;
     if (!inputs) inputs = this.prevLayer.values;
-    for (let i = 0; i < this.neurons.length; i++) {
-      this.values[i] = this.neurons[i].calcValue(inputs);
+    for (let i = 0; i < neurons.length; i++) {
+      this.values[i] = neurons[i].calcValue(inputs);
     }
+    this.values[neurons.length] = this.bias;
   }
 }
 
@@ -68,7 +70,7 @@ class NeuralNetwork {
   }
 
   getInput(x) {
-    let res = [x];
+    const res = [x];
     for (let i = 2; i < 6; i++) {
       res.push(Math.pow(x, i));
     }
