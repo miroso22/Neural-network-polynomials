@@ -6,6 +6,7 @@ const derivActivationFunc = x => Math.exp(-x) / Math.pow(Math.exp(-x) + 1, 2);
 class Neuron {
   constructor(nOfWeights) {
     this.weights = [];
+    this.mistakeKoef = 0;
     for (let i = 0; i < nOfWeights; i++) {
       this.weights[i] = Math.random() - 0.5;
     }
@@ -16,6 +17,7 @@ class Neuron {
     for (let i = 0; i < inputs.length; i++) {
       result += this.weights[i] * inputs[i];
     }
+    this.mistakeKoef = derivActivationFunc(result);
     return activationFunc(result);
   }
 }
@@ -44,24 +46,32 @@ class NeuronLayer {
   }
 
   changeWeights(mistake) {
-    const inputs = this.prevLayer.values;
-    for (const n of this.neurons) {
+    const prevLayer = this.prevLayer;
+    if (!prevLayer) return;
+
+    const neurons = this.neurons;
+    let sumOfMistakes = 0;
+    for (const n of neurons) {
+      const curNeuronMistake = mistake * n.mistakeKoef;
+      sumOfMistakes += curNeuronMistake;
       for (let i = 0; i < n.weights.length; i++) {
-        n.weights[i] += mistake * 1;
+        n.weights[i] += curNeuronMistake * prevLayer.values[i];
       }
     }
+    this.bias += sumOfMistakes;
+    prevLayer.changeWeights(sumOfMistakes);
   }
 }
 
 //------------------------------------------------------------------------------
 
 class NeuralNetwork {
-  constructor(numberOfLayers, numberOfInputs, ...neuronsInLayer) {
+  constructor(numberOfLayers, ...neuronsInLayer) {
     this.layers = [];
-    this.inputLayer = new NeuronLayer(numberOfInputs, undefined);
-    this.layers.push(new NeuronLayer(neuronsInLayer[0], this.inputLayer));
-    for (let i = 1; i < numberOfLayers; i++) {
-      this.layers.push(new NeuronLayer(neuronsInLayer[i], this.layers[i - 1]));
+    this.inputLayer = new NeuronLayer(neuronsInLayer[0], undefined);
+    this.layers.push(new NeuronLayer(neuronsInLayer[1], this.inputLayer));
+    for (let i = 2; i < numberOfLayers; i++) {
+      this.layers.push(new NeuronLayer(neuronsInLayer[i], this.layers[i - 2]));
     }
   }
 
@@ -77,11 +87,12 @@ class NeuralNetwork {
     return layers[layers.length - 1].values;
   }
 
-  train(x, answer) {
-    x /= 100;
-    answer /= 100;
-    const result = this.calcValues([x])[0];
-    const mistake = answer - result;
+  train(inputs, answers) {
+    inputs[0] /= 100;
+    answers[0] /= 100;
+    const result = this.calcValues(inputs)[0];
+    const mistake = answers[0] - result;
+    console.log(mistake);
 
     const layers = this.layers;
     layers[layers.length - 1].changeWeights(mistake);

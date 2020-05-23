@@ -16,6 +16,6 @@ rl.on('line', input => {
   if (data.length === NUMBER_OF_EXAMPLES) rl.close();
 });
 
-const nn = new Classes.NeuralNetwork(2, 1, 5, 1);
-nn.calcValues([2]);
+const nn = new Classes.NeuralNetwork(3, 1, 5, 1);
+console.log(nn.calcValues(2)[0]);
 console.log(`Write ${NUMBER_OF_EXAMPLES} examples`);
