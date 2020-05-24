@@ -92,10 +92,11 @@ class NeuralNetwork {
     answers[0] /= 100;
     const result = this.calcValues(inputs)[0];
     const mistake = answers[0] - result;
-    console.log(mistake);
 
     const layers = this.layers;
     layers[layers.length - 1].changeWeights(mistake);
+
+    return result;
   }
 }
 
