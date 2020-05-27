@@ -51,10 +51,12 @@ class NeuronLayer {
 
     const neurons = this.neurons;
     let sumOfMistakes = 0;
+    let j = 0;
     for (const n of neurons) {
-      const curNeuronMistake = mistake * n.mistakeKoef;
+      const curNeuronMistake = mistake[0] ? mistake[j++] * n.mistakeKoef :
+                                            mistake * n.mistakeKoef;
       sumOfMistakes += curNeuronMistake;
-      for (let i = 0; i < n.weights.length; i++) {
+      for (let i = 0; i < n.weights.length - 1; i++) {
         n.weights[i] += curNeuronMistake * prevLayer.values[i];
       }
     }
@@ -76,9 +78,6 @@ class NeuralNetwork {
   }
 
   calcValues(inputs) {
-    for (let i = 0; i < inputs.length; i++) {
-      inputs[i] /= 100;
-    }
     const layers = this.layers;
     this.inputLayer.values = inputs;
     for (let i = 0; i < layers.length; i++) {
@@ -88,15 +87,17 @@ class NeuralNetwork {
   }
 
   train(inputs, answers) {
-    inputs[0] /= 100;
-    answers[0] /= 100;
-    const result = this.calcValues(inputs)[0];
-    const mistake = answers[0] - result;
+    const results = this.calcValues(inputs);
+    results.pop(); // popping bias
+    const mistakes = [];
+    for (let i = 0; i < answers.length; i++) {
+      mistakes[i] = answers[i] - results[i];
+    }
 
     const layers = this.layers;
-    layers[layers.length - 1].changeWeights(mistake);
+    layers[layers.length - 1].changeWeights(mistakes);
 
-    return result;
+    return results;
   }
 }
 

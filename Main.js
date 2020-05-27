@@ -19,8 +19,8 @@ const rl = readline.createInterface({
 });
 rl.on('line', input => {
   if (input === 'q') rl.close();
-  const x = parseInt(input.split(' ')[0]);
-  const y = parseInt(input.split(' ')[1]);
+  const x = parseInt(input.split(' ')[0]) / 100;
+  const y = parseInt(input.split(' ')[1]) / 100;
   if (!isNaN(x) && !isNaN(y)) {
     if (data.length >= NUMBER_OF_EXAMPLES) {
       if (data.length === NUMBER_OF_EXAMPLES) learningProcess(data);
@@ -30,5 +30,4 @@ rl.on('line', input => {
   } else console.log('Invalid input');
 });
 
-console.log(nn.calcValues(2)[0]);
 console.log(`Write ${NUMBER_OF_EXAMPLES} examples`);
