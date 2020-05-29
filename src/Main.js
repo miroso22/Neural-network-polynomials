@@ -1,6 +1,7 @@
 'use strict';
 const NeuralNetwork = require('./Classes.js').NeuralNetwork;
 const process = require('process');
+const getPolynom = require('./PolynomInput.js').getPolynom;
 const readline = require('readline');
 
 const nn = new NeuralNetwork(3, 1, 5, 1);
