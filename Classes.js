@@ -1,7 +1,10 @@
 'use strict';
 
-const activationFunc = x => 1 / (1 + Math.exp(-x));
-const derivActivationFunc = x => Math.exp(-x) / Math.pow(Math.exp(-x) + 1, 2);
+const activationFunc = x => x;
+const derivActivationFunc = x => 1;
+
+//const activationFunc = x => 2 / (1 + Math.exp(-3 * x)) - 1;
+//const derivActivationFunc = x => 6 * Math.exp(-3 * x) / Math.pow(Math.exp(-3 * x) + 1, 2);
 
 class Neuron {
   constructor(nOfWeights) {
@@ -15,8 +18,10 @@ class Neuron {
   calcValue(inputs) {
     let result = 0;
     for (let i = 0; i < inputs.length; i++) {
+      //console.log('    I: ' + inputs[i] + ' W: ' + this.weights[i]);
       result += this.weights[i] * inputs[i];
     }
+    //console.log('    Res: ' + activationFunc(result) + '\n');
     this.mistakeKoef = derivActivationFunc(result);
     return activationFunc(result);
   }
@@ -40,6 +45,7 @@ class NeuronLayer {
     const neurons = this.neurons;
     const inputs = this.prevLayer.values;
     for (let i = 0; i < neurons.length; i++) {
+      //console.log('  Neuron ' + (i + 1) + ':');
       this.values[i] = neurons[i].calcValue(inputs);
     }
     this.values[neurons.length] = this.bias;
@@ -81,6 +87,7 @@ class NeuralNetwork {
     const layers = this.layers;
     this.inputLayer.values = inputs;
     for (let i = 0; i < layers.length; i++) {
+      //console.log('Layer ' + (i + 1) + ':');
       layers[i].calcValues();
     }
     return layers[layers.length - 1].values;
@@ -93,6 +100,10 @@ class NeuralNetwork {
     for (let i = 0; i < answers.length; i++) {
       mistakes[i] = answers[i] - results[i];
     }
+    console.log(`Input: ${inputs[0] * 10}`);
+    console.log(`Answer: ${answers[0] * 10}, Result: ${results[0] * 10}`);
+    console.log(`Mistake: ${mistakes[0] * 10}`);
+    console.log();
 
     const layers = this.layers;
     layers[layers.length - 1].changeWeights(mistakes);
