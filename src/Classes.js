@@ -71,11 +71,11 @@ class NeuronLayer {
 //------------------------------------------------------------------------------
 
 class NeuralNetwork {
-  constructor(numberOfLayers, ...neuronsInLayer) {
+  constructor(...neuronsInLayer) {
     this.layers = [];
     this.inputLayer = new NeuronLayer(neuronsInLayer[0], undefined);
     this.layers.push(new NeuronLayer(neuronsInLayer[1], this.inputLayer));
-    for (let i = 2; i < numberOfLayers; i++) {
+    for (let i = 2; i < neuronsInLayer.length; i++) {
       this.layers.push(new NeuronLayer(neuronsInLayer[i], this.layers[i - 2]));
     }
   }
@@ -96,9 +96,9 @@ class NeuralNetwork {
     for (let i = 0; i < answers.length; i++) {
       mistakes[i] = answers[i] - results[i];
     }
-    console.log(`Input: ${inputs[0] * 10}`);
-    console.log(`Answer: ${answers[0] * 10}, Result: ${results[0] * 10}`);
-    console.log(`Mistake: ${mistakes[0] * 10}`);
+    console.log(`Input: ${inputs[0] * 100}`);
+    console.log(`Answer: ${answers[0] * 100}, Result: ${results[0] * 100}`);
+    console.log(`Mistake: ${mistakes[0] * 100}`);
     console.log();
 
     const layers = this.layers;
