@@ -11,8 +11,9 @@ class Neuron {
     this.weights = [];
     this.mistakeKoef = 0;
     for (let i = 0; i < nOfWeights; i++) {
-      this.weights[i] = Math.random() - 0.5;
+      this.weights[i] = Math.random() - .5;
     }
+    this.bias = Math.random() - .5;
   }
 
   calcValue(inputs) {
@@ -20,8 +21,18 @@ class Neuron {
     for (let i = 0; i < inputs.length; i++) {
       result += this.weights[i] * inputs[i];
     }
+    result += this.bias;
     this.mistakeKoef = derivActivationFunc(result);
     return activationFunc(result);
+  }
+
+  display() {
+    console.log('    Weights:');
+    for (const w of this.weights) {
+      console.log('      ' + w);
+    }
+    console.log('    Bias:');
+    console.log('      ' + this.bias);
   }
 }
 
@@ -33,10 +44,9 @@ class NeuronLayer {
     this.values = [];
     const nOfWeights = prevLayer ? prevLayer.neurons.length : 0;
     for (let i = 0; i < numberOfNeurons; i++) {
-      this.neurons.push(new Neuron(nOfWeights + 1)); // +1 for bias
+      this.neurons.push(new Neuron(nOfWeights));
     }
     this.prevLayer = prevLayer;
-    this.bias = Math.random() - 0.5;
   }
 
   calcValues() {
@@ -45,7 +55,6 @@ class NeuronLayer {
     for (let i = 0; i < neurons.length; i++) {
       this.values[i] = neurons[i].calcValue(inputs);
     }
-    this.values[neurons.length] = this.bias;
   }
 
   changeWeights(mistake) {
@@ -59,12 +68,20 @@ class NeuronLayer {
       const curNeuronMistake = mistake[0] ? mistake[j++] * n.mistakeKoef :
                                             mistake * n.mistakeKoef;
       sumOfMistakes += curNeuronMistake;
-      for (let i = 0; i < n.weights.length - 1; i++) {
+      for (let i = 0; i < n.weights.length; i++) {
+        //console.log(prevLayer.values[i]);
         n.weights[i] += curNeuronMistake * prevLayer.values[i];
       }
+      n.bias += curNeuronMistake;
     }
-    this.bias += sumOfMistakes;
     prevLayer.changeWeights(sumOfMistakes);
+  }
+
+  display() {
+    for (let i = 0; i < this.neurons.length; i++) {
+      console.log(`  Neuron ${i + 1}:`);
+      this.neurons[i].display();
+    }
   }
 }
 
@@ -72,39 +89,55 @@ class NeuronLayer {
 
 class NeuralNetwork {
   constructor(...neuronsInLayer) {
-    this.layers = [];
     this.inputLayer = new NeuronLayer(neuronsInLayer[0], undefined);
-    this.layers.push(new NeuronLayer(neuronsInLayer[1], this.inputLayer));
-    for (let i = 2; i < neuronsInLayer.length; i++) {
-      this.layers.push(new NeuronLayer(neuronsInLayer[i], this.layers[i - 2]));
+    this.layers = [this.inputLayer];
+    for (let i = 1; i < neuronsInLayer.length; i++) {
+      this.layers.push(new NeuronLayer(neuronsInLayer[i], this.layers[i - 1]));
     }
+    this.outputLayer = this.layers[neuronsInLayer.length - 1];
   }
 
   calcValues(inputs) {
     const layers = this.layers;
     this.inputLayer.values = inputs;
-    for (let i = 0; i < layers.length; i++) {
+    for (let i = 1; i < layers.length; i++) {
       layers[i].calcValues();
     }
-    return layers[layers.length - 1].values;
+    return this.outputLayer.values;
   }
 
   train(inputs, answers) {
     const results = this.calcValues(inputs);
-    results.pop(); // popping bias
     const mistakes = [];
     for (let i = 0; i < answers.length; i++) {
       mistakes[i] = answers[i] - results[i];
     }
-    console.log(`Input: ${inputs[0] * 100}`);
-    console.log(`Answer: ${answers[0] * 100}, Result: ${results[0] * 100}`);
-    console.log(`Mistake: ${mistakes[0] * 100}`);
-    console.log();
+
+    console.log('Inputs: ' + inputs);
+    console.log(`Answers: ${answers}, Results: ${results}`);
+    console.log(`Mistakes: ${mistakes}`);
 
     const layers = this.layers;
     layers[layers.length - 1].changeWeights(mistakes);
 
     return results;
+  }
+
+  trainOnDataset(data) {
+    for (const example of data) {
+      this.train(example[0], example[1]);
+    }
+  }
+
+  display() {
+    console.log('Input Layer:');
+    console.log('  Neurons: ' + this.inputLayer.neurons.length);
+    for (let i = 1; i < this.layers.length - 1; i++) {
+      console.log(`Hidden Layer ${i}:`);
+      this.layers[i].display();
+    }
+    console.log('Output Layer:');
+    this.outputLayer.display();
   }
 }
 

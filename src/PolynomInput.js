@@ -2,12 +2,10 @@
 
 const getPolynom = input => {
   const koefs = input.split(' ');
+  if (koefs.length === 0) return;
   for (let i = 0; i < koefs.length; i++) {
     koefs[i] = parseFloat(koefs[i]);
-    if (isNaN(koefs[i])) {
-      console.log('Invalid function input');
-      return;
-    }
+    if (isNaN(koefs[i])) return;
   }
 
   const fn = x => {
@@ -17,7 +15,6 @@ const getPolynom = input => {
     }
     return res;
   }
-
   return fn;
 }
 
