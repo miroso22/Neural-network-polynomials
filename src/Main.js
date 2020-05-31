@@ -1,4 +1,7 @@
 'use strict';
+
+//-------------------------- Variables -----------------------------------------
+
 const NeuralNetwork = require('./Classes.js').NeuralNetwork;
 const process = require('process');
 const getPolynom = require('./PolynomInput.js').getPolynom;
@@ -19,9 +22,9 @@ const help = () => {
   console.log('Commands:');
   console.log('q - quit');
   console.log('d - display the structure of neural network');
-  console.log('t - enter training example');
+  console.log('t - enter a training example');
   console.log('c - count value from input');
-  console.log('f - enter a function, generate 100 examples and train neural network');
+  console.log('f - enter a function, generate 100 examples and train neural network with them');
   console.log('h - help');
 }
 const invalInput = () => {
@@ -40,7 +43,7 @@ const commandInput = input => {
       break;
     case 'c':
       consoleMode = 'c';
-      console.log('Enter a value and neural network will count the result');
+      console.log('Enter a value (a single number) and neural network will count the result');
       break;
     case 't':
       consoleMode = 't';

@@ -3,8 +3,11 @@
 const activationFunc = x => x;
 const derivActivationFunc = x => 1;
 
-//const activationFunc = x => 2 / (1 + Math.exp(-3 * x)) - 1;
-//const derivActivationFunc = x => 6 * Math.exp(-3 * x) / Math.pow(Math.exp(-3 * x) + 1, 2);
+// const activationFunc = x => 1 / (1 + Math.exp(-x));
+// const derivActivationFunc = x => Math.exp(-x) / Math.pow(1 + Math.exp(-x), 2);
+
+// const activationFunc = x => 2 / (1 + Math.exp(-3 * x)) - 1;
+// const derivActivationFunc = x => 6 * Math.exp(-3 * x) / Math.pow(Math.exp(-3 * x) + 1, 2);
 
 class Neuron {
   constructor(nOfWeights) {
@@ -69,7 +72,6 @@ class NeuronLayer {
                                             mistake * n.mistakeKoef;
       sumOfMistakes += curNeuronMistake;
       for (let i = 0; i < n.weights.length; i++) {
-        //console.log(prevLayer.values[i]);
         n.weights[i] += curNeuronMistake * prevLayer.values[i];
       }
       n.bias += curNeuronMistake;
