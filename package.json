@@ -18,5 +18,8 @@
   "homepage": "https://github.com/Miroso02/Neural-network-polynomials#readme",
   "devDependencies": {
     "eslint": "^7.1.0"
+  },
+  "dependencies": {
+    "colors": "^1.4.0"
   }
 }

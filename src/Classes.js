@@ -30,12 +30,12 @@ class Neuron {
   }
 
   display() {
-    console.log('    Weights:');
+    console.log('    Weights:'.green);
     for (const w of this.weights) {
-      console.log('      ' + w);
+      console.log(`      ${w}`.yellow);
     }
-    console.log('    Bias:');
-    console.log('      ' + this.bias);
+    console.log('    Bias:'.green);
+    console.log(`      ${this.bias}`.yellow);
   }
 }
 
@@ -81,7 +81,7 @@ class NeuronLayer {
 
   display() {
     for (let i = 0; i < this.neurons.length; i++) {
-      console.log(`  Neuron ${i + 1}:`);
+      console.log(`  Neuron ${i + 1}:`.green);
       this.neurons[i].display();
     }
   }
@@ -115,9 +115,9 @@ class NeuralNetwork {
       mistakes[i] = answers[i] - results[i];
     }
 
-    console.log('Inputs: ' + inputs);
-    console.log(`Answers: ${answers}, Results: ${results}`);
-    console.log(`Mistakes: ${mistakes}`);
+    console.log('Inputs: '.green + `${inputs}`.yellow);
+    console.log('Answers: '.green + `${answers}`.yellow + ', Results: '.green + `${results}`.yellow);
+    console.log('Mistakes: '.green + `${mistakes}`.yellow);
 
     const layers = this.layers;
     layers[layers.length - 1].changeWeights(mistakes);
@@ -132,13 +132,13 @@ class NeuralNetwork {
   }
 
   display() {
-    console.log('Input Layer:');
-    console.log('  Neurons: ' + this.inputLayer.neurons.length);
+    console.log('Input Layer:'.green);
+    console.log(`  Neurons: ${this.inputLayer.neurons.length}`.yellow);
     for (let i = 1; i < this.layers.length - 1; i++) {
-      console.log(`Hidden Layer ${i}:`);
+      console.log(`Hidden Layer ${i}:`.green);
       this.layers[i].display();
     }
-    console.log('Output Layer:');
+    console.log('Output Layer:'.green);
     this.outputLayer.display();
   }
 }
