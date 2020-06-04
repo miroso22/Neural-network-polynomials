@@ -1,6 +1,7 @@
 'use strict';
 
 const colors = require('colors');
+const fs = require('fs');
 
 const activationFunc = x => x;
 const derivActivationFunc = x => 1;
@@ -142,6 +143,62 @@ class NeuralNetwork {
     }
     console.log('Output Layer:'.green);
     this.outputLayer.display();
+  }
+
+  saveTo(fileName) {
+    let savingData = '';
+    for (let i = 1; i < this.layers.length; i++) {
+      for (const n of this.layers[i].neurons) {
+        for (const w of n.weights) {
+          savingData += w + ',';
+        }
+        savingData += n.bias + ';';
+      }
+      savingData += '\n';
+    }
+    fs.writeFile(fileName, savingData, err => {
+      if (err) throw err;
+      console.log('Saved successfully to ' + fileName);
+    });
+  }
+
+  static loadFrom(fileName) {
+    try {
+      // Read data from file
+      const data = fs.readFileSync(fileName, 'utf8');
+      const nnData = [];
+      const neuronsInLayer = [];
+      const layerInfo = data.split('\n');
+      for (let i = 0; i < layerInfo.length - 1; i++) {
+        const layer = [];
+        const neuronInfo = layerInfo[i].split(';');
+        for (let j = 0; j < neuronInfo.length - 1; j++) {
+          const weightsInfo = neuronInfo[j].split(',');
+          weightsInfo.forEach((elem, i, arr) => arr[i] = parseFloat(elem));
+          layer.push(weightsInfo);
+          neuronsInLayer[i] = neuronsInLayer[i] | weightsInfo.length - 1;
+        }
+        nnData.push(layer);
+        neuronsInLayer[layerInfo.length - 1] = neuronInfo.length - 1;
+      }
+      // Put all settings into new neural network
+      const loadedNN = new NeuralNetwork(...neuronsInLayer);
+      for (let i = 1; i < loadedNN.layers.length; i++) {
+        const curLayer = loadedNN.layers[i];
+        for (let j = 0; j < curLayer.neurons.length; j++) {
+          const curNeuron = curLayer.neurons[j];
+          for (let k = 0; k < curNeuron.weights.length; k++) {
+            curNeuron.weights[k] = nnData[i - 1][j][k];
+          }
+          curNeuron.bias = nnData[i - 1][j][curNeuron.weights.length];
+        }
+      }
+      // Return a neural network with loaded weights and biases
+      console.log('Loaded successfully from ' + fileName);
+      return loadedNN;
+    } catch(err) {
+      if (err) throw err;
+    }
   }
 }
 
