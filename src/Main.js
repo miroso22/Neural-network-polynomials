@@ -6,6 +6,7 @@ const NeuralNetwork = require('./Classes.js').NeuralNetwork;
 const process = require('process');
 const getPolynom = require('./PolynomInput.js').getPolynom;
 const readline = require('readline');
+const colors = require('colors');
 
 const nn = new NeuralNetwork(1, 1);
 let consoleMode = 'c';
@@ -27,66 +28,7 @@ const help = () => {
   console.log('f - enter a function, generate 100 examples and train neural network with them'.yellow);
   console.log('h - help'.yellow);
 }
-const invalInput = () => {
-  console.log('Invalid input. Enter h for help'.red);
-}
-const commandInput = input => {
-  switch (input) {
-    case 'q':
-      rl.close();
-      break;
-    case 'h':
-      help();
-      break;
-    case 'd':
-      nn.display();
-      break;
-    case 'c':
-      consoleMode = 'c';
-      console.log('Enter a value (a single number) and neural network will count the result'.green);
-      break;
-    case 't':
-      consoleMode = 't';
-      console.log('Enter a value and the right answer. Format: "x y"'.green);
-      break;
-    case 'f':
-      consoleMode = 'f';
-      console.log('Enter koefs near the powers of polynom'.green);
-      console.log('For example, 5x^2-3 will be "5 0 -3"'.green);
-      break;
-  }
-}
-const trainingInput = input => {
-  let x;
-  let y;
-  let fn;
-  switch (consoleMode) {
-    case 'c':
-      x = parseInt(input) / NORM_KOEF;
-      if (!isNaN(x)) {
-        const answer = Math.round(nn.calcValues([x])[0] * NORM_KOEF);
-        console.log('Result: '.cyan + `${answer}`.yellow);
-      }
-      else invalInput();
-      break;
-    case 't':
-      x = parseInt(input.split(' ')[0]) / NORM_KOEF;
-      y = parseInt(input.split(' ')[1]) / NORM_KOEF;
-      if (!isNaN(x) && !isNaN(y)) {
-        const answer = Math.round(nn.train([x], [y])[0] * NORM_KOEF);
-        console.log('Expected answer: '.cyan + `${answer}`.yellow);
-        console.log();
-      } else invalInput();
-      break;
-    case 'f':
-      fn = getPolynom(input);
-      if (fn) {
-        nn.trainOnDataset(generateExamples(fn));
-        consoleMode = 'c';
-      } else console.log('Invalid function input'.red);
-      break;
-  }
-}
+const invalInput = () => console.log('Invalid input. Enter h for help'.red);
 
 const generateExamples = fn => {
   const data = [];
@@ -101,9 +43,60 @@ const generateExamples = fn => {
 
 rl.on('line', input => {
   if (input.length === 1 && COMMANDS.indexOf(input) != -1) {
-    commandInput(input);
+    switch (input) {
+      case 'q':
+        rl.close();
+        break;
+      case 'h':
+        help();
+        break;
+      case 'd':
+        nn.display();
+        break;
+      case 'c':
+        consoleMode = 'c';
+        console.log('Enter a value (a single number) and neural network will count the result'.green);
+        break;
+      case 't':
+        consoleMode = 't';
+        console.log('Enter a value and the right answer. Format: "x y"'.green);
+        break;
+      case 'f':
+        consoleMode = 'f';
+        console.log('Enter koefs near the powers of polynom'.green);
+        console.log('For example, 5x^2-3 will be "5 0 -3"'.green);
+        break;
+    }
   } else {
-    trainingInput(input);
+    let x;
+    let y;
+    let fn;
+    switch (consoleMode) {
+      case 'c':
+        x = parseInt(input) / NORM_KOEF;
+        if (!isNaN(x)) {
+          const answer = Math.round(nn.calcValues([x])[0] * NORM_KOEF);
+          console.log('Result: '.cyan + `${answer}`.yellow);
+        }
+        else invalInput();
+        break;
+      case 't':
+        x = parseInt(input.split(' ')[0]) / NORM_KOEF;
+        y = parseInt(input.split(' ')[1]) / NORM_KOEF;
+        if (!isNaN(x) && !isNaN(y)) {
+          const answer = Math.round(nn.train([x], [y])[0] * NORM_KOEF);
+          console.log('Expected answer: '.cyan + `${answer}`.yellow);
+          console.log();
+        } else invalInput();
+        break;
+      case 'f':
+        fn = getPolynom(input);
+        if (fn) {
+          nn.trainOnDataset(generateExamples(fn));
+          consoleMode = 'c';
+        } else console.log('Invalid function input'.red);
+        break;
+    }
   }
 });
 console.log('This application was created to show you an example of Neural Network learning'.yellow);

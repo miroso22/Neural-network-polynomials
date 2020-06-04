@@ -1,5 +1,7 @@
 'use strict';
 
+const colors = require('colors');
+
 const activationFunc = x => x;
 const derivActivationFunc = x => 1;
 
