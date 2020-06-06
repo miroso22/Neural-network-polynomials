@@ -29,6 +29,13 @@ const trainData = [
   [ [0.5, 0.7], [0.3, -0.4, 0.1] ],
   [ [0.1, 0.3], [-0.9, 0, 0.2] ]
 ];
-nn.trainOnDataset(trainData);
+nn.trainOnDataset(trainData); // Notice that all input data must be normalized to [-1, 1] interval
 ```
-Notice that all input data must be normalized to [-1, 1] interval
+- To save network to a file:
+```
+nn.saveTo(%fileName%);
+```
+- To load network from a file:
+```
+const nn2 = NN.loadFrom(%fileName%);
+```
