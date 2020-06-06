@@ -6,11 +6,11 @@ const fs = require('fs');
 const activationFunc = x => x;
 const derivActivationFunc = x => 1;
 
-// const activationFunc = x => 1 / (1 + Math.exp(-x));
-// const derivActivationFunc = x => Math.exp(-x) / Math.pow(1 + Math.exp(-x), 2);
+const activationFunc2 = x => 1 / (1 + Math.exp(-x));
+const derivActivationFunc2 = x => Math.exp(-x) / Math.pow(1 + Math.exp(-x), 2);
 
-// const activationFunc = x => 2 / (1 + Math.exp(-3 * x)) - 1;
-// const derivActivationFunc = x => 6 * Math.exp(-3 * x) / Math.pow(Math.exp(-3 * x) + 1, 2);
+const activationFunc3 = x => 2 / (1 + Math.exp(-3 * x)) - 1;
+const derivActivationFunc3 = x => 6 * Math.exp(-3 * x) / Math.pow(Math.exp(-3 * x) + 1, 2);
 
 class Neuron {
   constructor(nOfWeights) {
@@ -176,7 +176,7 @@ class NeuralNetwork {
           const weightsInfo = neuronInfo[j].split(',');
           weightsInfo.forEach((elem, i, arr) => arr[i] = parseFloat(elem));
           layer.push(weightsInfo);
-          neuronsInLayer[i] = neuronsInLayer[i] | weightsInfo.length - 1;
+          neuronsInLayer[i] = neuronsInLayer[i] || weightsInfo.length - 1;
         }
         nnData.push(layer);
         neuronsInLayer[layerInfo.length - 1] = neuronInfo.length - 1;

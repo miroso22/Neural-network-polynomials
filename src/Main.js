@@ -8,7 +8,7 @@ const getPolynom = require('./PolynomInput.js').getPolynom;
 const readline = require('readline');
 const colors = require('colors');
 
-const nn = new NeuralNetwork(1, 5, 1);
+const nn = new NeuralNetwork(1, 1);
 let consoleMode = 'c';
 const COMMANDS = 'qdtcfh';
 const NORM_KOEF = 100;
