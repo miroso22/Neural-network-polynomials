@@ -8,9 +8,10 @@ const getPolynom = require('./PolynomInput.js').getPolynom;
 const readline = require('readline');
 const colors = require('colors');
 
+const inputCommands = {};
+
 const nn = new NeuralNetwork(1, 1);
 let consoleMode = 'c';
-const COMMANDS = 'qdtcfh';
 const NORM_KOEF = 100;
 const rl = readline.createInterface({
   input: process.stdin,
@@ -19,15 +20,6 @@ const rl = readline.createInterface({
 
 //--------------------------- Input functions ----------------------------------
 
-const help = () => {
-  console.log('Commands:'.green);
-  console.log('q - quit'.yellow);
-  console.log('d - display the structure of neural network'.yellow);
-  console.log('t - enter a training example'.yellow);
-  console.log('c - count value from input'.yellow);
-  console.log('f - enter a function, generate 100 examples and train neural network with them'.yellow);
-  console.log('h - help'.yellow);
-}
 const invalInput = () => console.log('Invalid input. Enter h for help'.red);
 
 const generateExamples = fn => {
@@ -39,34 +31,36 @@ const generateExamples = fn => {
   return data;
 }
 
+inputCommands['h'] = () => { // help
+  console.log('Commands:'.green);
+  console.log('q - quit'.yellow);
+  console.log('d - display the structure of neural network'.yellow);
+  console.log('t - enter a training example'.yellow);
+  console.log('c - count value from input'.yellow);
+  console.log('f - enter a function, generate 100 examples and train neural network with them'.yellow);
+  console.log('h - help'.yellow);
+};
+inputCommands['q'] = rl.close(); // quit
+inputCommands['d'] = nn.display(); // display
+inputCommands['c'] = () => { // count value
+  consoleMode = 'c';
+  console.log('Enter a value (a single number) and neural network will count the result'.green);
+};
+inputCommands['t'] = () => { // train
+  consoleMode = 't';
+  console.log('Enter a value and the right answer. Format: "x y"'.green);
+};
+inputCommands['f'] = () => { // enter a function
+  consoleMode = 'f';
+  console.log('Enter koefs near the powers of polynom'.green);
+  console.log('For example, 5x^2-3 will be "5 0 -3"'.green);
+};
+
 //--------------------------- Main code ----------------------------------------
 
 rl.on('line', input => {
-  if (input.length === 1 && COMMANDS.indexOf(input) != -1) {
-    switch (input) {
-      case 'q':
-        rl.close();
-        break;
-      case 'h':
-        help();
-        break;
-      case 'd':
-        nn.display();
-        break;
-      case 'c':
-        consoleMode = 'c';
-        console.log('Enter a value (a single number) and neural network will count the result'.green);
-        break;
-      case 't':
-        consoleMode = 't';
-        console.log('Enter a value and the right answer. Format: "x y"'.green);
-        break;
-      case 'f':
-        consoleMode = 'f';
-        console.log('Enter koefs near the powers of polynom'.green);
-        console.log('For example, 5x^2-3 will be "5 0 -3"'.green);
-        break;
-    }
+  if (inputCommands[input]) {
+    inputCommands[input]();
   } else {
     let x;
     let y;
@@ -102,4 +96,4 @@ rl.on('line', input => {
 console.log('This application was created to show you an example of Neural Network learning'.yellow);
 console.log('Come up with some polynom, enter the exapmles of input-output pairs \n'.yellow +
             'and neural network will try to guess your formula and give you correct answers'.yellow);
-help();
+inputCommands['h'](); // call help() function
