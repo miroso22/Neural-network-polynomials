@@ -57,8 +57,8 @@ inputCommands['h'] = () => { // help
   console.log('f - enter a function, generate 100 examples and train neural network with them'.yellow);
   console.log('h - help'.yellow);
 };
-inputCommands['q'] = rl.close(); // quit
-inputCommands['d'] = nn.display(); // display
+inputCommands['q'] = () => rl.close(); // quit
+inputCommands['d'] = () => nn.display(); // display
 inputCommands['c'] = () => { // count value
   consoleMode = 'c';
   console.log('Enter a value (a single number) and neural network will count the result'.green);
@@ -89,6 +89,7 @@ const generateExamples = fn => {
 //--------------------------- Main code ----------------------------------------
 
 rl.on('line', input => {
+  //console.log(input);
   if (inputCommands[input]) inputCommands[input]();
   else inputValues[consoleMode](input);
 });
